@@ -1,0 +1,34 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.2.8</VERSION>
+ <DEVICE>"ATmega2560"</DEVICE>
+ <WORKING_DIR>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\Debug</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc</DIR>
+  <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR></DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m2560def.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\Debug\lab3.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>lab3.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>lab3.map</FILE>
+  <FILE>lab3.lss</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <initialise><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>37</LINE></initialise>
+  <loop><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>42</LINE></loop>
+  <push_mask><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>47</LINE></push_mask>
+  <update_delay><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>50</LINE></update_delay>
+  <nextcol><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>70</LINE></nextcol>
+  <row_loop><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>62</LINE></row_loop>
+  <resolve><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>76</LINE></resolve>
+  <halt><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>79</LINE></halt>
+ </LABELS>
+</ASSEMBLER_INFO>

@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm Thu Oct 10 14:26:06 2024
+AVRASM ver. 2.2.8  C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm Fri Oct 11 12:38:12 2024
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1359,6 +1359,26 @@ EQU  URXC3addr    0000006c
 EQU  UDRE3addr    0000006e
 EQU  UTXC3addr    00000070
 EQU  INT_VECTORS_SIZE 00000072
+EQU  PORTCDIR     000000f0
+EQU  PORTBDIR     0000000f
+EQU  INITCOLMASK  00000070
+EQU  INITROWMASK  00000008
+EQU  COLXORMASK   00000088
+EQU  CHECKROWMASK 0000000f
+EQU  KEYPADSIZE   00000004
 DEF  w            r16
-CSEG outer_key_scan_loop 00000005
-CSEG halt         00000005
+DEF  cur_col      r2
+DEF  cur_row      r3
+DEF  col_xor_mask r4
+DEF  keypad_size  r5
+DEF  row_val      r6
+DEF  row_mask     r17
+DEF  col_mask     r18
+CSEG initialise   00000008
+CSEG loop         0000000a
+CSEG push_mask    0000000e
+CSEG update_delay 00000010
+CSEG nextcol      00000020
+CSEG row_loop     00000019
+CSEG resolve      00000024
+CSEG halt         00000024
