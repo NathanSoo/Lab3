@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm Fri Oct 11 12:38:12 2024
+AVRASM ver. 2.2.8  C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm Sat Oct 19 15:14:24 2024
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m2560def.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m2560def.inc'
@@ -1850,23 +1850,37 @@ AVRASM ver. 2.2.8  C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\
                                  
                                  .equ PORTCDIR		= 0b11110000
                                  .equ PORTBDIR		= 0b00001111
-                                 .equ INITCOLMASK	= 0b01110000
+                                 .equ INITCOLMASK	= 0b01111111
                                  .equ INITROWMASK	= 0b00001000
-                                 .equ COLXORMASK		= 0b10001000
+                                 .equ COLXORMASK		= 0b10000000
                                  .equ CHECKROWMASK	= 0b00001111
                                  
                                  .equ KEYPADSIZE		= 4
                                  
-                                 .def w				= r16
-                                 .def cur_col		= r2
-                                 .def cur_row		= r3
-                                 .def col_xor_mask	= r4
-                                 .def keypad_size	= r5
-                                 .def row_val		= r6
-                                 .def row_mask		= r17
-                                 .def col_mask		= r18
+                                 .def w				= r16				; free to change
+                                 .def cur_col		= r2				; free to change
+                                 .def cur_row		= r3				; free to change
+                                 .def col_xor_mask	= r4				; please don't change
+                                 .def keypad_size	= r5				; please don't change
+                                 .def row_val		= r6				; free to change
+                                 .def row_mask		= r17				; free to change
+                                 .def col_mask		= r18				; free to change
                                  
-000000 e808                      	ldi		w, COLXORMASK				; initialise xor mask
+                                 .cseg
+                                 
+                                 .macro debounce
+                                 	ldi zl, 0b11111111
+                                 	ldi zh, 0b11111111
+                                 
+                                 debounce_loop:
+                                 	nop
+                                 	subi zl, 1
+                                 	sbci zh, 0
+                                 	brne debounce_loop
+                                 
+                                 .endmacro
+                                 
+000000 e800                      	ldi		w, COLXORMASK				; initialise xor mask
 000001 2e40                      	mov		col_xor_mask, w
                                  
 000002 e004                      	ldi		w, KEYPADSIZE				; initialise keypad size
@@ -1877,15 +1891,14 @@ AVRASM ver. 2.2.8  C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\
 000006 e00f                      	ldi		w, PORTBDIR
 000007 b904                      	out		DDRB, w
                                  
-                                 initialise:
+                                 scan_keypad:
 000008 2422                      	clr		cur_col						; clear column
-                                 
-000009 e720                      	ldi		col_mask, INITCOLMASK		; initialise column mask
+000009 e72f                      	ldi		col_mask, INITCOLMASK		; initialise column mask
                                  
                                  loop:
 00000a 1425                      	cp		cur_col, keypad_size		; if maximum columns reached
-00000b f011                      	breq	push_mask
-00000c e720                      	ldi		col_mask, INITCOLMASK		; reset the column mask
+00000b f014                      	brlt	push_mask
+00000c e72f                      	ldi		col_mask, INITCOLMASK		; reset the column mask
 00000d 2422                      	clr		cur_col						; reset column count
                                  push_mask:
 00000e b928                      	out		PORTC, col_mask
@@ -1894,33 +1907,70 @@ AVRASM ver. 2.2.8  C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\
 000010 950a                      	dec		w
 000011 f7f1                      	brne	update_delay
                                  
-000012 b103                      	in		w, PINB						; read portb
+000012 b106                      	in		w, PINC						; read portc
 000013 700f                      	andi	w, CHECKROWMASK				; read only the inputs
-000014 300f                      	cpi     w, CHECKROWMASK				; check if any of the buttons are pressed
-000015 f051                      	breq	nextcol
+000014 300f                      	cpi		w, CHECKROWMASK
+000015 f099                      	breq	nextcol						; check if any of the buttons are pressed
                                  
-000016 2433                      	clr		cur_row						; clear row
-000017 e018                      	ldi		row_mask, INITROWMASK		; initialise
-000018 2e60                      	mov		row_val, w					; move value of inputs to another register
+000016 2e60                      	mov		row_val, w					; save copy of inputs
+000017 2433                      	clr		cur_row						; initialise row scan
+000018 e018                      	ldi		row_mask, INITROWMASK
                                  row_loop:
-000019 2d06                      	mov		w, row_val
-00001a 2301                      	and		w, row_mask
-00001b f041                      	breq	resolve
-00001c 9516                      	lsr		row_mask
-00001d 9433                      	inc		cur_row
-00001e 1435                      	cp		cur_row, keypad_size
-00001f f7c9                      	brne	row_loop
+000019 2d06                      	mov		w, row_val					; get input value
+00001a 2301                      	and		w, row_mask					; mask out single bit
+00001b f449                      	brne	inc_row						; if button pressed
+00001c efef
+00001d efff
+00001e 0000
+00001f 50e1
+000020 40f0
+000021 f7e1                      	debounce							; debounce button
+000022 b106                      	in		w, PINC						; read port again
+000023 2301                      	and		w, row_mask					; check value of pin again
+000024 f041                      	breq	resolve						; if button still pressed resolve value
+                                 inc_row:
+000025 9516                      	lsr		row_mask					; shift row mask
+000026 9433                      	inc		cur_row						; increment row count
+000027 1435                      	cp		cur_row, keypad_size
+000028 f781                      	brne	row_loop
                                  nextcol:
-000020 9526                      	lsr		col_mask					; shift column mask right
-000021 2524                      	eor		col_mask, col_xor_mask		; re-set left most bit and clear bit right of mask
-000022 9423                      	inc		cur_col							; increment column count
-000023 cfe6                      	rjmp	loop
+000029 9526                      	lsr		col_mask					; shift column mask right
+00002a 2524                      	eor		col_mask, col_xor_mask		; re-set left most bit and clear bit right of mask
+00002b 9423                      	inc		cur_col						; increment column count
+00002c cfdd                      	rjmp	loop
                                  
                                  resolve:
+00002d 0c33                      	lsl		cur_row
+00002e 0c33                      	lsl		cur_row
+00002f 2d03                      	mov		w, cur_row
+000030 0d02                      	add		w, cur_col
                                  
+000031 e0f0                      	ldi		zh, high(lookup<<1)
+000032 e7e4                      	ldi		zl, low(lookup<<1)
+                                 
+000033 24ff                      	clr		r15
+000034 0fe0                      	add		zl, w
+000035 1dff                      	adc		zh, r15
+                                 
+000036 9104                      	lpm		w, z
+                                 
+000037 b905                      	out		PORTB, w
+                                 
+                                 
+000038 cfcf                      	rjmp scan_keypad
                                  
                                  halt:
-000024 cfff                      	rjmp halt
+000039 cfff                      	rjmp	halt
+                                 
+                                 lookup:
+00003a 0100
+00003b 0302
+00003c 0504
+00003d 0706
+00003e 0908
+00003f 0b0a
+000040 0d0c
+000041 0f0e                      	.db	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 
 
 RESOURCE USE INFORMATION
@@ -1938,40 +1988,40 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega2560" register use summary:
-x  :   0 y  :   0 z  :   0 r0 :   0 r1 :   0 r2 :   4 r3 :   3 r4 :   2 
+x  :   0 y  :   0 z  :   1 r0 :   0 r1 :   0 r2 :   5 r3 :   6 r4 :   2 
 r5 :   3 r6 :   2 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  16 r17:   3 r18:   5 r19:   0 r20:   0 
+r13:   0 r14:   0 r15:   2 r16:  23 r17:   4 r18:   5 r19:   0 r20:   0 
 r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 
-r29:   0 r30:   0 r31:   0 
-Registers used: 8 out of 35 (22.9%)
+r29:   0 r30:   4 r31:   4 
+Registers used: 12 out of 35 (34.3%)
 
 "ATmega2560" instruction use summary:
-.lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   0 and   :   1 
+.lds  :   0 .sts  :   0 adc   :   1 add   :   2 adiw  :   0 and   :   2 
 andi  :   1 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
-brcc  :   0 brcs  :   0 break :   0 breq  :   3 brge  :   0 brhc  :   0 
-brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
-brne  :   2 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
+brcc  :   0 brcs  :   0 break :   0 breq  :   2 brge  :   0 brhc  :   0 
+brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   1 brmi  :   0 
+brne  :   4 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :   0 cbr   :   0 
-clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   3 cls   :   0 
+clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   4 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   2 cpc   :   0 
 cpi   :   1 cpse  :   0 dec   :   1 eicall:   0 eijmp :   0 elpm  :   0 
 eor   :   1 fmul  :   0 fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 
-in    :   1 inc   :   2 jmp   :   0 ld    :   0 ldd   :   0 ldi   :   8 
-lds   :   0 lpm   :   0 lsl   :   0 lsr   :   2 mov   :   4 movw  :   0 
-mul   :   0 muls  :   0 mulsu :   0 neg   :   0 nop   :   0 or    :   0 
-ori   :   0 out   :   3 pop   :   0 push  :   0 rcall :   0 ret   :   0 
-reti  :   0 rjmp  :   2 rol   :   0 ror   :   0 sbc   :   0 sbci  :   0 
+in    :   2 inc   :   2 jmp   :   0 ld    :   0 ldd   :   0 ldi   :  12 
+lds   :   0 lpm   :   2 lsl   :   2 lsr   :   2 mov   :   5 movw  :   0 
+mul   :   0 muls  :   0 mulsu :   0 neg   :   0 nop   :   1 or    :   0 
+ori   :   0 out   :   4 pop   :   0 push  :   0 rcall :   0 ret   :   0 
+reti  :   0 rjmp  :   3 rol   :   0 ror   :   0 sbc   :   0 sbci  :   1 
 sbi   :   0 sbic  :   0 sbis  :   0 sbiw  :   0 sbr   :   0 sbrc  :   0 
 sbrs  :   0 sec   :   0 seh   :   0 sei   :   0 sen   :   0 ser   :   0 
 ses   :   0 set   :   0 sev   :   0 sez   :   0 sleep :   0 spm   :   0 
-st    :   0 std   :   0 sts   :   0 sub   :   0 subi  :   0 swap  :   0 
+st    :   0 std   :   0 sts   :   0 sub   :   0 subi  :   1 swap  :   0 
 tst   :   0 wdr   :   0 
-Instructions used: 16 out of 116 (13.8%)
+Instructions used: 24 out of 116 (20.7%)
 
 "ATmega2560" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x00004a     74      0     74  262144   0.0%
+[.cseg] 0x000000 0x000084    116     16    132  262144   0.1%
 [.dseg] 0x000200 0x000200      0      0      0    8192   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    4096   0.0%
 
