@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm Sat Oct 19 15:14:24 2024
+AVRASM ver. 2.2.8  C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm Mon Oct 21 12:42:21 2024
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m2560def.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m2560def.inc'
@@ -1852,19 +1852,24 @@ AVRASM ver. 2.2.8  C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\
                                  .equ PORTBDIR		= 0b00001111
                                  .equ INITCOLMASK	= 0b01111111
                                  .equ INITROWMASK	= 0b00001000
-                                 .equ COLXORMASK		= 0b10000000
                                  .equ CHECKROWMASK	= 0b00001111
                                  
                                  .equ KEYPADSIZE		= 4
+                                 .equ NSTATES		= 3
+                                 .equ LARGESTDIGIT	= 9
                                  
                                  .def w				= r16				; free to change
-                                 .def cur_col		= r2				; free to change
-                                 .def cur_row		= r3				; free to change
-                                 .def col_xor_mask	= r4				; please don't change
-                                 .def keypad_size	= r5				; please don't change
-                                 .def row_val		= r6				; free to change
-                                 .def row_mask		= r17				; free to change
-                                 .def col_mask		= r18				; free to change
+                                 .def cur_col		= r2				; free to change outside of keypad loop
+                                 .def cur_row		= r3				; free to change outside of keypad loop
+                                 .def keypad_size	= r4				; please don't change
+                                 .def row_val		= r5				; free to change outside of keypad loop
+                                 .def temp			= r6				; free to change
+                                 .def arg0			= r10				; please don't change
+                                 .def arg1			= r11				; please don't change
+                                 .def arg2			= r12				; please don't change
+                                 .def row_mask		= r17				; please don't change
+                                 .def col_mask		= r18				; free to change outside of keypad loop
+                                 .def state			= r19				; please don't change
                                  
                                  .cseg
                                  
@@ -1877,100 +1882,213 @@ AVRASM ver. 2.2.8  C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\
                                  	subi zl, 1
                                  	sbci zh, 0
                                  	brne debounce_loop
-                                 
                                  .endmacro
                                  
-000000 e800                      	ldi		w, COLXORMASK				; initialise xor mask
-000001 2e40                      	mov		col_xor_mask, w
+                                 .macro add_digit
+                                 	mov		r6, @0
+                                 	lsl		r6
+                                 	lsl		r6
+                                 	lsl		r6
+                                 	lsl		@0
+                                 	add		@0, r6
+                                 	add		@0, @1
+                                 .endmacro
                                  
-000002 e004                      	ldi		w, KEYPADSIZE				; initialise keypad size
-000003 2e50                      	mov		keypad_size, w
+                                 .macro advance_state
+                                 	inc		state
+                                 	cpi		state, NSTATES
+                                 	brlt	end_advance
+                                 	clr		state
+                                 	clr		arg0
+                                 	clr		arg1
+                                 	clr		arg2
+                                 end_advance:
+                                 .endmacro
+                                 	
                                  
-000004 ef00                      	ldi		w, PORTCDIR					; initialise pin directions
-000005 b907                      	out		DDRC, w
-000006 e00f                      	ldi		w, PORTBDIR
-000007 b904                      	out		DDRB, w
+000000 e004                      	ldi		w, KEYPADSIZE				; initialise keypad size
+000001 2e40                      	mov		keypad_size, w
+                                 
+000002 ef00                      	ldi		w, PORTCDIR					; initialise pin directions
+000003 b907                      	out		DDRC, w
+000004 e00f                      	ldi		w, PORTBDIR
+000005 b904                      	out		DDRB, w
+                                 
+000006 2733                      	clr		state						; initialise input state
+000007 24aa                      	clr		arg0
+000008 24bb                      	clr		arg1
+000009 24cc                      	clr		arg2
                                  
                                  scan_keypad:
-000008 2422                      	clr		cur_col						; clear column
-000009 e72f                      	ldi		col_mask, INITCOLMASK		; initialise column mask
+00000a 2422                      	clr		cur_col						; clear column
+00000b e72f                      	ldi		col_mask, INITCOLMASK		; initialise column mask
                                  
                                  loop:
-00000a 1425                      	cp		cur_col, keypad_size		; if maximum columns reached
-00000b f014                      	brlt	push_mask
-00000c e72f                      	ldi		col_mask, INITCOLMASK		; reset the column mask
-00000d 2422                      	clr		cur_col						; reset column count
+00000c 1424                      	cp		cur_col, keypad_size		; if maximum columns reached
+00000d f014                      	brlt	push_mask
+00000e e72f                      	ldi		col_mask, INITCOLMASK		; reset the column mask
+00000f 2422                      	clr		cur_col						; reset column count
                                  push_mask:
-00000e b928                      	out		PORTC, col_mask
-00000f ef0f                      	ldi		w, 0b11111111				; delay to allow pin to update
+000010 b928                      	out		PORTC, col_mask
+000011 ef0f                      	ldi		w, 0b11111111				; delay to allow pin to update
                                  update_delay:
-000010 950a                      	dec		w
-000011 f7f1                      	brne	update_delay
+000012 950a                      	dec		w
+000013 f7f1                      	brne	update_delay
                                  
-000012 b106                      	in		w, PINC						; read portc
-000013 700f                      	andi	w, CHECKROWMASK				; read only the inputs
-000014 300f                      	cpi		w, CHECKROWMASK
-000015 f099                      	breq	nextcol						; check if any of the buttons are pressed
+000014 b106                      	in		w, PINC						; read portc
+000015 700f                      	andi	w, CHECKROWMASK				; read only the inputs
+000016 300f                      	cpi		w, CHECKROWMASK
+000017 f099                      	breq	nextcol						; check if any of the buttons are pressed
                                  
-000016 2e60                      	mov		row_val, w					; save copy of inputs
-000017 2433                      	clr		cur_row						; initialise row scan
-000018 e018                      	ldi		row_mask, INITROWMASK
+000018 2e50                      	mov		row_val, w					; save copy of inputs
+000019 2433                      	clr		cur_row						; initialise row scan
+00001a e018                      	ldi		row_mask, INITROWMASK
                                  row_loop:
-000019 2d06                      	mov		w, row_val					; get input value
-00001a 2301                      	and		w, row_mask					; mask out single bit
-00001b f449                      	brne	inc_row						; if button pressed
-00001c efef
-00001d efff
-00001e 0000
-00001f 50e1
-000020 40f0
-000021 f7e1                      	debounce							; debounce button
-000022 b106                      	in		w, PINC						; read port again
-000023 2301                      	and		w, row_mask					; check value of pin again
-000024 f041                      	breq	resolve						; if button still pressed resolve value
+00001b 2d05                      	mov		w, row_val					; get input value
+00001c 2301                      	and		w, row_mask					; mask out single bit
+00001d f449                      	brne	inc_row						; if button pressed
+00001e efef
+00001f efff
+000020 0000
+000021 50e1
+000022 40f0
+000023 f7e1                      	debounce							; debounce button
+000024 b106                      	in		w, PINC						; read port again
+000025 2301                      	and		w, row_mask					; check value of pin again
+000026 f041                      	breq	resolve						; if button still pressed resolve value
                                  inc_row:
-000025 9516                      	lsr		row_mask					; shift row mask
-000026 9433                      	inc		cur_row						; increment row count
-000027 1435                      	cp		cur_row, keypad_size
-000028 f781                      	brne	row_loop
+000027 9516                      	lsr		row_mask					; shift row mask
+000028 9433                      	inc		cur_row						; increment row count
+000029 1434                      	cp		cur_row, keypad_size
+00002a f781                      	brne	row_loop
                                  nextcol:
-000029 9526                      	lsr		col_mask					; shift column mask right
-00002a 2524                      	eor		col_mask, col_xor_mask		; re-set left most bit and clear bit right of mask
-00002b 9423                      	inc		cur_col						; increment column count
-00002c cfdd                      	rjmp	loop
+00002b 9526                      	lsr		col_mask					; shift column mask right
+00002c 6820                      	sbr		col_mask, 0b10000000		; re-set left most bit
+00002d 9423                      	inc		cur_col						; increment column count
+00002e cfdd                      	rjmp	loop
                                  
                                  resolve:
-00002d 0c33                      	lsl		cur_row
-00002e 0c33                      	lsl		cur_row
-00002f 2d03                      	mov		w, cur_row
-000030 0d02                      	add		w, cur_col
+00002f 0c33                      	lsl		cur_row						; get key index by adding row * 4 + column
+000030 0c33                      	lsl		cur_row
+000031 2d03                      	mov		w, cur_row
+000032 0d02                      	add		w, cur_col
                                  
-000031 e0f0                      	ldi		zh, high(lookup<<1)
-000032 e7e4                      	ldi		zl, low(lookup<<1)
+000033 e0f1                      	ldi		zh, high(value_lookup<<1)	; get numeric value from lookup table (or ascii if non-numeric)
+000034 e0e0                      	ldi		zl, low(value_lookup<<1)
                                  
-000033 24ff                      	clr		r15
-000034 0fe0                      	add		zl, w
-000035 1dff                      	adc		zh, r15
+000035 24ff                      	clr		r15							
+000036 0fe0                      	add		zl, w
+000037 1dff                      	adc		zh, r15
                                  
-000036 9104                      	lpm		w, z
+000038 9104                      	lpm		w, z
                                  
-000037 b905                      	out		PORTB, w
+000039 3030                      	cpi		state, 0					; state machine
+00003a f021                      	breq	state0
+00003b 3031                      	cpi		state, 1
+00003c f0b1                      	breq	state1
+00003d 3032                      	cpi		state, 2
+00003e f141                      	breq	state2
+                                 
+                                 	; below is where code to write to LCD can be written
+                                 state0:
+00003f 3009                      	cpi		w, LARGESTDIGIT				; check if value is numeric
+000040 f444                      	brge	not_num0					; if not check if button advances state
+000041 2c6a
+000042 0c66
+000043 0c66
+000044 0c66
+000045 0caa
+000046 0ca6
+000047 0ea0                      	add_digit arg0, w					; if numeric then multiply existing argument by 10 and add new number
+000048 c031                      	rjmp	end_state
+                                 not_num0:
+000049 320a                      	cpi		w, 0x2A						; check if correct button is pressed otherwise do nothing	
+00004a f579                      	brne	end_state					
+00004b 9533
+00004c 3033
+00004d f024
+00004e 2733
+00004f 24aa
+000050 24bb
+000051 24cc                      	advance_state						; otherwise advance the state machine
+000052 c027                      	rjmp	end_state
+                                 state1:
+000053 3009                      	cpi		w, LARGESTDIGIT
+000054 f444                      	brge	not_num1
+000055 2c6b
+000056 0c66
+000057 0c66
+000058 0c66
+000059 0cbb
+00005a 0cb6
+00005b 0eb0                      	add_digit arg1, w
+00005c c01d                      	rjmp	end_state
+                                 not_num1:
+00005d 3404                      	cpi		w, 0x44
+00005e f4d9                      	brne	end_state
+00005f 9533
+000060 3033
+000061 f024
+000062 2733
+000063 24aa
+000064 24bb
+000065 24cc                      	advance_state
+000066 c013                      	rjmp	end_state
+                                 state2:
+000067 3009                      	cpi		w, LARGESTDIGIT
+000068 f444                      	brge	not_num2
+000069 2c6c
+00006a 0c66
+00006b 0c66
+00006c 0c66
+00006d 0ccc
+00006e 0cc6
+00006f 0ec0                      	add_digit arg2, w
+000070 c009                      	rjmp	end_state
+                                 not_num2:
+000071 3203                      	cpi		w, 0x23
+000072 f439                      	brne	end_state
+                                 	; call calculation function here arguments in r10, r11, r12 currently
+000073 9533
+000074 3033
+000075 f024
+000076 2733
+000077 24aa
+000078 24bb
+000079 24cc                      	advance_state						; note that advance state here will clear the r10, r11, r12
+                                 end_state:
+                                 
+00007a b8c5                      	out		PORTB, arg2
+                                 
+                                 hold_loop:								; wait until button is unpressed before continuing to read keypad
+00007b b106                      	in		w, PINC						; read port again
+00007c 2301                      	and		w, row_mask					; check value of pin again
+00007d f3e9                      	breq	hold_loop					; if button still pressed don't allow key to be continually read
+                                 
+00007e cf8b                      	rjmp	scan_keypad
                                  
                                  
-000038 cfcf                      	rjmp scan_keypad
+                                 	
                                  
                                  halt:
-000039 cfff                      	rjmp	halt
-                                 
-                                 lookup:
-00003a 0100
-00003b 0302
-00003c 0504
-00003d 0706
-00003e 0908
-00003f 0b0a
-000040 0d0c
-000041 0f0e                      	.db	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+00007f cfff                      	rjmp	halt
+                                 value_lookup:
+000080 0201
+000081 4103
+000082 0504
+000083 4206
+000084 0807
+000085 4309
+000086 002a
+000087 4423                      	.db		1, 2, 3, 0x41, 4, 5, 6, 0x42, 7, 8, 9, 0x43, 0x2A, 0, 0x23, 0x44
+                                 ascii_lookup:
+000088 3231
+000089 4133
+00008a 3534
+00008b 4236
+00008c 3837
+00008d 4339
+00008e 302a
 
 
 RESOURCE USE INFORMATION
@@ -1988,40 +2106,40 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega2560" register use summary:
-x  :   0 y  :   0 z  :   1 r0 :   0 r1 :   0 r2 :   5 r3 :   6 r4 :   2 
-r5 :   3 r6 :   2 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   2 r16:  23 r17:   4 r18:   5 r19:   0 r20:   0 
+x  :   0 y  :   0 z  :   1 r0 :   0 r1 :   0 r2 :   5 r3 :   6 r4 :   3 
+r5 :   2 r6 :  15 r7 :   0 r8 :   0 r9 :   0 r10:   8 r11:   8 r12:   9 
+r13:   0 r14:   0 r15:   2 r16:  31 r17:   5 r18:   5 r19:  13 r20:   0 
 r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 
 r29:   0 r30:   4 r31:   4 
-Registers used: 12 out of 35 (34.3%)
+Registers used: 16 out of 35 (45.7%)
 
 "ATmega2560" instruction use summary:
-.lds  :   0 .sts  :   0 adc   :   1 add   :   2 adiw  :   0 and   :   2 
+.lds  :   0 .sts  :   0 adc   :   1 add   :   8 adiw  :   0 and   :   3 
 andi  :   1 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
-brcc  :   0 brcs  :   0 break :   0 breq  :   2 brge  :   0 brhc  :   0 
-brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   1 brmi  :   0 
-brne  :   4 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
+brcc  :   0 brcs  :   0 break :   0 breq  :   6 brge  :   3 brhc  :   0 
+brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   4 brmi  :   0 
+brne  :   7 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :   0 cbr   :   0 
-clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   4 cls   :   0 
+clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :  20 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   2 cpc   :   0 
-cpi   :   1 cpse  :   0 dec   :   1 eicall:   0 eijmp :   0 elpm  :   0 
-eor   :   1 fmul  :   0 fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 
-in    :   2 inc   :   2 jmp   :   0 ld    :   0 ldd   :   0 ldi   :  12 
-lds   :   0 lpm   :   2 lsl   :   2 lsr   :   2 mov   :   5 movw  :   0 
+cpi   :  13 cpse  :   0 dec   :   1 eicall:   0 eijmp :   0 elpm  :   0 
+eor   :   0 fmul  :   0 fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 
+in    :   3 inc   :   5 jmp   :   0 ld    :   0 ldd   :   0 ldi   :  11 
+lds   :   0 lpm   :   2 lsl   :  14 lsr   :   2 mov   :   7 movw  :   0 
 mul   :   0 muls  :   0 mulsu :   0 neg   :   0 nop   :   1 or    :   0 
 ori   :   0 out   :   4 pop   :   0 push  :   0 rcall :   0 ret   :   0 
-reti  :   0 rjmp  :   3 rol   :   0 ror   :   0 sbc   :   0 sbci  :   1 
-sbi   :   0 sbic  :   0 sbis  :   0 sbiw  :   0 sbr   :   0 sbrc  :   0 
+reti  :   0 rjmp  :   8 rol   :   0 ror   :   0 sbc   :   0 sbci  :   1 
+sbi   :   0 sbic  :   0 sbis  :   0 sbiw  :   0 sbr   :   1 sbrc  :   0 
 sbrs  :   0 sec   :   0 seh   :   0 sei   :   0 sen   :   0 ser   :   0 
 ses   :   0 set   :   0 sev   :   0 sez   :   0 sleep :   0 spm   :   0 
 st    :   0 std   :   0 sts   :   0 sub   :   0 subi  :   1 swap  :   0 
 tst   :   0 wdr   :   0 
-Instructions used: 24 out of 116 (20.7%)
+Instructions used: 25 out of 116 (21.6%)
 
 "ATmega2560" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000084    116     16    132  262144   0.1%
+[.cseg] 0x000000 0x000120    256     32    288  262144   0.1%
 [.dseg] 0x000200 0x000200      0      0      0    8192   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    4096   0.0%
 

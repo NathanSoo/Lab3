@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm Sat Oct 19 15:14:24 2024
+AVRASM ver. 2.2.8  C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm Mon Oct 21 12:42:21 2024
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1363,25 +1363,42 @@ EQU  PORTCDIR     000000f0
 EQU  PORTBDIR     0000000f
 EQU  INITCOLMASK  0000007f
 EQU  INITROWMASK  00000008
-EQU  COLXORMASK   00000080
 EQU  CHECKROWMASK 0000000f
 EQU  KEYPADSIZE   00000004
+EQU  NSTATES      00000003
+EQU  LARGESTDIGIT 00000009
 DEF  w            r16
 DEF  cur_col      r2
 DEF  cur_row      r3
-DEF  col_xor_mask r4
-DEF  keypad_size  r5
-DEF  row_val      r6
+DEF  keypad_size  r4
+DEF  row_val      r5
+DEF  temp         r6
+DEF  arg0         r10
+DEF  arg1         r11
+DEF  arg2         r12
 DEF  row_mask     r17
 DEF  col_mask     r18
-CSEG scan_keypad  00000008
-CSEG loop         0000000a
-CSEG push_mask    0000000e
-CSEG update_delay 00000010
-CSEG nextcol      00000029
-CSEG row_loop     00000019
-CSEG inc_row      00000025
-CSEG debounce_loop@debounce@1916 0000001e
-CSEG resolve      0000002d
-CSEG lookup       0000003a
-CSEG halt         00000039
+DEF  state        r19
+CSEG scan_keypad  0000000a
+CSEG loop         0000000c
+CSEG push_mask    00000010
+CSEG update_delay 00000012
+CSEG nextcol      0000002b
+CSEG row_loop     0000001b
+CSEG inc_row      00000027
+CSEG debounce_loop@debounce@1944 00000020
+CSEG resolve      0000002f
+CSEG value_lookup 00000080
+CSEG state0       0000003f
+CSEG state1       00000053
+CSEG state2       00000067
+CSEG not_num0     00000049
+CSEG end_state    0000007a
+CSEG end_advance@advance_state@2009 00000052
+CSEG not_num1     0000005d
+CSEG end_advance@advance_state@2038 00000066
+CSEG not_num2     00000071
+CSEG end_advance@advance_state@2068 0000007a
+CSEG hold_loop    0000007b
+CSEG halt         0000007f
+CSEG ascii_lookup 00000088

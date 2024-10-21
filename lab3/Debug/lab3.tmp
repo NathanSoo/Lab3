@@ -22,15 +22,24 @@
   <FILE>lab3.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <scan_keypad><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>51</LINE></scan_keypad>
-  <loop><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>55</LINE></loop>
-  <push_mask><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>60</LINE></push_mask>
-  <update_delay><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>63</LINE></update_delay>
-  <nextcol><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>88</LINE></nextcol>
-  <row_loop><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>75</LINE></row_loop>
-  <inc_row><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>83</LINE></inc_row>
-  <resolve><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>94</LINE></resolve>
-  <lookup><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>117</LINE></lookup>
-  <halt><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>114</LINE></halt>
+  <scan_keypad><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>79</LINE></scan_keypad>
+  <loop><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>83</LINE></loop>
+  <push_mask><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>88</LINE></push_mask>
+  <update_delay><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>91</LINE></update_delay>
+  <nextcol><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>116</LINE></nextcol>
+  <row_loop><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>103</LINE></row_loop>
+  <inc_row><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>111</LINE></inc_row>
+  <resolve><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>122</LINE></resolve>
+  <value_lookup><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>191</LINE></value_lookup>
+  <state0><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>145</LINE></state0>
+  <state1><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>155</LINE></state1>
+  <state2><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>165</LINE></state2>
+  <not_num0><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>150</LINE></not_num0>
+  <end_state><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>175</LINE></end_state>
+  <not_num1><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>160</LINE></not_num1>
+  <not_num2><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>170</LINE></not_num2>
+  <hold_loop><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>179</LINE></hold_loop>
+  <halt><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>189</LINE></halt>
+  <ascii_lookup><FILE>C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm</FILE><LINE>193</LINE></ascii_lookup>
  </LABELS>
 </ASSEMBLER_INFO>
