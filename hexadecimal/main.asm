@@ -11,13 +11,15 @@
 ; Replace with your application code
 hex_conversion:
 	;lds r29, result
-    ldi r29, r24          ; Load result (y) into register r29. 97 for the test
+    mov r29, r24          ; Load result (y) into register r29. 97 for the test
 
     ; Display '0x' prefix
     ldi r27, '0'
-    rcall WRITE
+    lcd_write_data
+    lcd_wait_busy
     ldi r27, 'x'
-    rcall WRITE
+    lcd_write_data
+    lcd_wait_busy
 
     ; Extract high nibble
     mov r27, r29          ; Copy number to r27
@@ -27,13 +29,15 @@ hex_conversion:
     lsr r27
     andi r27, 0x0F        ; Mask to get lower 4 bits (high nibble)
     rcall hex_to_ascii     ; Convert high nibble to ASCII
-    rcall WRITE    ; Send to LCD
+    lcd_write_data
+    lcd_wait_busy    ; Send to LCD
 
     ; Extract low nibble
     mov r27, r29          ; Copy number to r27 again
     andi r27, 0x0F        ; Mask to get low nibble
     rcall hex_to_ascii     ; Convert low nibble to ASCII
-    rcall WRITE    ; Send to LCD
+    lcd_write_data
+    lcd_wait_busy    ; Send to LCD
 
     ret
 
