@@ -11,7 +11,7 @@
 ; Replace with your application code
 hex_conversion:
 	;lds r29, result
-    ldi r29, r24          ; Load result (y) into register r29. 97 for the test
+    mov r29, r24          ; Load result (y) into register r29. 97 for the test
 
     ; Display '0x' prefix
     ldi r27, '0'
