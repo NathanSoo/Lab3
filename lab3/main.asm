@@ -20,16 +20,15 @@
 .def cur_row		= r3				; free to change outside of keypad loop
 .def keypad_size	= r4				; please don't change
 .def row_val		= r5				; free to change outside of keypad loop
-.def temp			= r6				; free to change
+.def working_out	= r6				; free to change
 .def arg0			= r10				; please don't change
 .def arg1			= r11				; please don't change
 .def arg2			= r12				; please don't change
 .def row_mask		= r17				; please don't change
 .def col_mask		= r18				; free to change outside of keypad loop
 .def state			= r19				; please don't change
+.def base			= r21				; please don't change
 
-.def overflow		= r25				; overflow from linear function
-.def value			= r24				; value return from linear function
 .cseg
 
 .macro debounce
@@ -77,7 +76,7 @@ delay:
 	out PORTB, r16
 .endmacro
 	
-
+	rcall	INITIALISE_LCD
 	ldi		w, KEYPADSIZE				; initialise keypad size
 	mov		keypad_size, w
 
@@ -85,8 +84,6 @@ delay:
 	out		DDRC, w
 	ldi		w, PORTBDIR
 	out		DDRB, w
-	;ser		r16 
-	;out		DDRE, r20   ; set port C for output
 
 	clr		state						; initialise input state
 	clr		arg0
@@ -151,6 +148,13 @@ resolve:
 
 	lpm		w, z
 
+	cpi		w, 0x43
+	brne	not_c
+	ser		r18
+	eor		base, working_out
+	rjmp	end_state
+
+not_c:
 	cpi		state, 0					; state machine
 	breq	state0
 	cpi		state, 1
@@ -158,7 +162,6 @@ resolve:
 	cpi		state, 2
 	breq	state2
 
-	; below is where code to write to LCD can be written
 state0:
 	cpi		w, LARGESTDIGIT				; check if value is numeric
 	brge	not_num0					; if not check if button advances state
@@ -188,17 +191,13 @@ not_num2:
 	cpi		w, 0x23
 	brne	end_state
 	rcall	linear
-	cpi		overflow, 1
+	cpi		r25, 1
 	brne	display
 	advance_state						; note that advance state here will clear the r10, r11, r12
 end_state:
 	
 
 	;out		PORTB, arg2
-
-display: 
-	rcall INITIALISE_LCD
-	rcall decimal_conversion
 
 	
 
@@ -209,7 +208,16 @@ hold_loop:								; wait until button is unpressed before continuing to read key
 
 	rjmp	scan_keypad
 	
-
+display: 
+	rcall	INITIALISE_LCD
+	cpi		base, 0
+	breq	base_if
+	rcall	hexidecimal_conversion
+	rjmp	end_base_if
+base_if:
+	rcall	decimal_conversion
+end_base_if:
+	rjmp	end_state
 
 	; linear function
 halt:
@@ -228,6 +236,7 @@ linear:
 	push r17		; save conflict registers
 	clr  r24       
 	clr  r25        ; init r25:r24 to 0 
+	clr  r0
 	in   YL, SPL
 	in   YH, SPH    ; Initialise stack frame pointer value
 	push r12        ; Pass in b
@@ -270,15 +279,10 @@ done:
 .equ LCD_E = 6
 .equ LCD_RW = 5
 
-.def data = r16
-.def temp = r17
-.def DL = r18
-.def DH = r19
-
 .macro lcd_write_cmd		; set LCD instructions, does not wait for BF
-	out PORTF, data			; set data port
-	clr temp	
-	out PORTA, temp			; RS = 0, RW = 0 for a command write
+	out PORTF, r16			; set data port
+	clr r18
+	out PORTA, r18			; RS = 0, RW = 0 for a command write
 	nop
 	sbi PORTA, LCD_E		
 	nop
@@ -292,8 +296,8 @@ done:
 
 .macro lcd_write_data		; write data to LCD, waits for BF
 	out PORTF, r27			; set data port
-	ldi temp, (1 << LCD_RS)|(0 << LCD_RW)
-	out PORTA, temp			; RS = 1, RW = 0 for data write
+	ldi r18, (1 << LCD_RS)|(0 << LCD_RW)
+	out PORTA, r18			; RS = 1, RW = 0 for data write
 	nop
 	sbi PORTA, LCD_E		;
 	nop
@@ -306,28 +310,28 @@ done:
 .endmacro
 
 .macro lcd_wait_busy		; read from LCD until BF is clear
-	clr temp
-	out DDRF, temp			; read from LCD
-	ldi temp, (0 << LCD_RS)|(1 << LCD_RW)
-	out PORTA, temp			; RS = =, RW = 1, cmd port read
+	clr r18
+	out DDRF, r17			; read from LCD
+	ldi r18, (0 << LCD_RS)|(1 << LCD_RW)
+	out PORTA, r18			; RS = =, RW = 1, cmd port read
 busy:
 	nop						
 	sbi PORTA, LCD_E		; turn on enable pin
 	nop						; data delay
 	nop
 	nop
-	in temp, PINF			; read value from LCD
+	in r18, PINF			; read value from LCD
 	cbi PORTA, LCD_E		; clear enable pin
-	sbrc temp, 7			; skip next if busy flag not set
+	sbrc r18, 7			; skip next if busy flag not set
 	rjmp busy				; else loop
 
 	nop
 	nop
 	nop
-	clr temp
-	out PORTA, temp			; RS, RW = 0, IR write
-	ser temp
-	out DDRF, temp			; output to LCD
+	clr r18
+	out PORTA, r18			; RS, RW = 0, IR write
+	ser r18
+	out DDRF, r18			; output to LCD
 	nop
 	nop
 	nop
@@ -335,13 +339,13 @@ busy:
 
 .macro delay				; delay for 1us
 loop1:
-	ldi temp, 3				; 1
+	ldi r17, 3				; 1
 loop2:
-	dec temp				; 1
+	dec r17				; 1
 	nop						; 1
 	brne loop2				; 2 taken, 1 not ----> inner loop total is 11 cycles
-	subi DL, 1				; 1
-	sbci DH, 0				; 1
+	subi r18, 1				; 1
+	sbci r19, 0				; 1
 	brne loop1				; 2 taken, each outer iteration is 11 + 1 + 1 + 1 + 2 = 16 clock cycles at 16Mhz = 1us
 .endmacro
 
@@ -357,45 +361,45 @@ INITIALISE_LCD:
 	in YH, SPH
 	sbiw Y, 1
 
-	ser temp
-	out DDRF, temp
-	out DDRA, temp
-	clr temp
-	out PORTF, temp
-	out PORTA, temp
+	ser r17
+	out DDRF, r17
+	out DDRA, r17
+	clr r17
+	out PORTF, r17
+	out PORTA, r17
 	;
-	ldi DL, low(15000)		; delay 15ms
-	ldi DH, high(15000)
+	ldi r18, low(15000)		; delay 15ms
+	ldi r19, high(15000)
 	delay
-	ldi data, 0b00111000	; 2 x 5 x 7 DL = 1, 8bits | N = 1, 2-line | F = 0, 5 x 7 dots
+	ldi r16, 0b00111000	; 2 x 5 x 7 r18 = 1, 8bits | N = 1, 2-line | F = 0, 5 x 7 dots
 	lcd_write_cmd			; 1st function cmd set
 
-	ldi DL, low(4100)		; delay 4.1ms
-	ldi DH, high(4100)
+	ldi r18, low(4100)		; delay 4.1ms
+	ldi r19, high(4100)
 	delay
 	lcd_write_cmd			; 2nd function cmd set
 
-	ldi DL, low(100)		; delay 4.1ms
-	ldi DH, high(100)
+	ldi r18, low(100)		; delay 4.1ms
+	ldi r19, high(100)
 	delay
 	lcd_write_cmd			; 3rd function cmd set
 	lcd_write_cmd			; final function cmd set
 	;
 	lcd_wait_busy			; wait until ready
 
-	ldi data, 0b00001000	; LCD display off
+	ldi r16, 0b00001000	; LCD display off
 	lcd_write_cmd
 	lcd_wait_busy
 
-	ldi data, 0b00000001	; LCD display clear
+	ldi r16, 0b00000001	; LCD display clear
 	lcd_write_cmd
 	lcd_wait_busy
 
-	ldi data, 0b00000110	; increment, no shift
+	ldi r16, 0b00000110	; increment, no shift
 	lcd_write_cmd
 	lcd_wait_busy
 
-	ldi data, 0b00001111	; LCD display on, cursor, blink
+	ldi r16, 0b00001111	; LCD display on, cursor, blink
 	lcd_write_cmd
 	lcd_wait_busy
 
@@ -411,31 +415,6 @@ INITIALISE_LCD:
 	pop r16
 	ret
 
-WRITE:
-	; write to data
-	push r16
-	push r17
-	push YL
-	push YH
-	in YL, SPL
-	in YH, SPH
-	sbiw Y, 1
-
-	mov data, r27	; change the arg register to display
-	lcd_write_data
-	lcd_wait_busy
-
-	;epilogue
-	adiw Y, 1
-	out SPH, YH
-	out SPL, YL
-	pop YH
-	pop YL
-	pop r17
-	pop r16
-	ret
-
-
 ;
 ; Decimal_Hex.asm
 ;
@@ -450,7 +429,7 @@ WRITE:
 
 decimal_conversion:
 	ldi r23, '0'
-    ldi r26, r24             ; Load result (y) r24 into register r26.
+    mov r26, r24             ; Load result (y) r24 into register r26.
     tst r26                   ; Test if result is zero
     brpl positive_number       ; If positive, branch to handle positive numbers
 
@@ -493,7 +472,7 @@ display_ones_digit:
     ; Ones place is left in r30 (remainder of tens division)
     add r30, r23              ; Convert to ASCII
 	mov r27, r30
-    rcall WRITE        ; Send ones digit to LCDlcd_write_data
+    lcd_write_data        ; Send ones digit to LCDlcd_write_data
 	lcd_wait_busy
 
     ret                        ; Return from subroutine

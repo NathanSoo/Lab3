@@ -22,27 +22,41 @@
   <FILE>lab3.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <scan_keypad><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>94</LINE></scan_keypad>
-  <loop><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>98</LINE></loop>
-  <push_mask><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>103</LINE></push_mask>
-  <update_delay><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>106</LINE></update_delay>
-  <nextcol><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>131</LINE></nextcol>
-  <row_loop><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>118</LINE></row_loop>
-  <inc_row><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>126</LINE></inc_row>
-  <resolve><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>137</LINE></resolve>
-  <value_lookup><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>202</LINE></value_lookup>
-  <state0><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>160</LINE></state0>
-  <state1><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>170</LINE></state1>
-  <state2><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>180</LINE></state2>
-  <not_num0><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>165</LINE></not_num0>
-  <end_state><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>190</LINE></end_state>
-  <not_num1><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>175</LINE></not_num1>
-  <not_num2><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>185</LINE></not_num2>
-  <linear><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>207</LINE></linear>
-  <hold_loop><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>192</LINE></hold_loop>
-  <halt><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>200</LINE></halt>
-  <ascii_lookup><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>204</LINE></ascii_lookup>
-  <overflow><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>232</LINE></overflow>
-  <done><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>235</LINE></done>
+  <INITIALISE_LCD><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>352</LINE></INITIALISE_LCD>
+  <scan_keypad><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>93</LINE></scan_keypad>
+  <loop><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>97</LINE></loop>
+  <push_mask><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>102</LINE></push_mask>
+  <update_delay><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>105</LINE></update_delay>
+  <nextcol><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>130</LINE></nextcol>
+  <row_loop><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>117</LINE></row_loop>
+  <inc_row><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>125</LINE></inc_row>
+  <resolve><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>136</LINE></resolve>
+  <value_lookup><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>225</LINE></value_lookup>
+  <not_c><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>157</LINE></not_c>
+  <end_state><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>197</LINE></end_state>
+  <state0><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>165</LINE></state0>
+  <state1><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>175</LINE></state1>
+  <state2><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>185</LINE></state2>
+  <not_num0><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>170</LINE></not_num0>
+  <not_num1><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>180</LINE></not_num1>
+  <not_num2><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>190</LINE></not_num2>
+  <linear><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>230</LINE></linear>
+  <display><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>211</LINE></display>
+  <hold_loop><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>204</LINE></hold_loop>
+  <base_if><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>217</LINE></base_if>
+  <end_base_if><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>219</LINE></end_base_if>
+  <decimal_conversion><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>430</LINE></decimal_conversion>
+  <halt><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>223</LINE></halt>
+  <ascii_lookup><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>227</LINE></ascii_lookup>
+  <overflow><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>256</LINE></overflow>
+  <done><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>259</LINE></done>
+  <positive_number><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>444</LINE></positive_number>
+  <divide><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>481</LINE></divide>
+  <display_digit><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>453</LINE></display_digit>
+  <check_tens_digit><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>458</LINE></check_tens_digit>
+  <display_tens_digit><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>467</LINE></display_tens_digit>
+  <display_ones_digit><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>471</LINE></display_ones_digit>
+  <divide_loop><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>485</LINE></divide_loop>
+  <divide_done><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>493</LINE></divide_done>
  </LABELS>
 </ASSEMBLER_INFO>
