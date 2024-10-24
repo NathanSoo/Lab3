@@ -28,6 +28,8 @@
 .def col_mask		= r18				; free to change outside of keypad loop
 .def state			= r19				; please don't change
 
+.def overflow		= r25				; overflow from linear function
+.def value			= r24				; value return from linear function
 .cseg
 
 .macro debounce
@@ -186,8 +188,19 @@ not_num2:
 	cpi		w, 0x23
 	brne	end_state
 	rcall	linear
+	cpi		overflow, 1
+	brne	display
 	advance_state						; note that advance state here will clear the r10, r11, r12
 end_state:
+	
+
+	;out		PORTB, arg2
+
+display: 
+	rcall INITIALISE_LCD
+	rcall decimal_conversion
+
+	
 
 hold_loop:								; wait until button is unpressed before continuing to read keypad
 	in		w, PINC						; read port again
@@ -197,6 +210,8 @@ hold_loop:								; wait until button is unpressed before continuing to read key
 	rjmp	scan_keypad
 	
 
+
+	; linear function
 halt:
 	rjmp	halt
 value_lookup:
@@ -240,3 +255,262 @@ done:
 	pop YH
 	pop YL
 	ret             ; return to main
+
+;
+; lab5_output.asm
+;
+; Created: 22/10/2024 9:06:18 PM
+; Author : Owen
+;
+
+; parameter passed from r27
+; Replace with your application code
+.include "m2560def.inc"
+.equ LCD_RS = 7
+.equ LCD_E = 6
+.equ LCD_RW = 5
+
+.def data = r16
+.def temp = r17
+.def DL = r18
+.def DH = r19
+
+.macro lcd_write_cmd		; set LCD instructions, does not wait for BF
+	out PORTF, data			; set data port
+	clr temp	
+	out PORTA, temp			; RS = 0, RW = 0 for a command write
+	nop
+	sbi PORTA, LCD_E		
+	nop
+	nop
+	nop
+	cbi PORTA, LCD_E
+	nop
+	nop
+	nop
+.endmacro
+
+.macro lcd_write_data		; write data to LCD, waits for BF
+	out PORTF, r27			; set data port
+	ldi temp, (1 << LCD_RS)|(0 << LCD_RW)
+	out PORTA, temp			; RS = 1, RW = 0 for data write
+	nop
+	sbi PORTA, LCD_E		;
+	nop
+	nop
+	nop
+	cbi PORTA, LCD_E
+	nop
+	nop
+	nop
+.endmacro
+
+.macro lcd_wait_busy		; read from LCD until BF is clear
+	clr temp
+	out DDRF, temp			; read from LCD
+	ldi temp, (0 << LCD_RS)|(1 << LCD_RW)
+	out PORTA, temp			; RS = =, RW = 1, cmd port read
+busy:
+	nop						
+	sbi PORTA, LCD_E		; turn on enable pin
+	nop						; data delay
+	nop
+	nop
+	in temp, PINF			; read value from LCD
+	cbi PORTA, LCD_E		; clear enable pin
+	sbrc temp, 7			; skip next if busy flag not set
+	rjmp busy				; else loop
+
+	nop
+	nop
+	nop
+	clr temp
+	out PORTA, temp			; RS, RW = 0, IR write
+	ser temp
+	out DDRF, temp			; output to LCD
+	nop
+	nop
+	nop
+.endmacro
+
+.macro delay				; delay for 1us
+loop1:
+	ldi temp, 3				; 1
+loop2:
+	dec temp				; 1
+	nop						; 1
+	brne loop2				; 2 taken, 1 not ----> inner loop total is 11 cycles
+	subi DL, 1				; 1
+	sbci DH, 0				; 1
+	brne loop1				; 2 taken, each outer iteration is 11 + 1 + 1 + 1 + 2 = 16 clock cycles at 16Mhz = 1us
+.endmacro
+
+INITIALISE_LCD:
+	; prologue
+	push r16
+	push r17
+	push r18
+	push r19
+	push YL
+	push YH
+	in YL, SPL
+	in YH, SPH
+	sbiw Y, 1
+
+	ser temp
+	out DDRF, temp
+	out DDRA, temp
+	clr temp
+	out PORTF, temp
+	out PORTA, temp
+	;
+	ldi DL, low(15000)		; delay 15ms
+	ldi DH, high(15000)
+	delay
+	ldi data, 0b00111000	; 2 x 5 x 7 DL = 1, 8bits | N = 1, 2-line | F = 0, 5 x 7 dots
+	lcd_write_cmd			; 1st function cmd set
+
+	ldi DL, low(4100)		; delay 4.1ms
+	ldi DH, high(4100)
+	delay
+	lcd_write_cmd			; 2nd function cmd set
+
+	ldi DL, low(100)		; delay 4.1ms
+	ldi DH, high(100)
+	delay
+	lcd_write_cmd			; 3rd function cmd set
+	lcd_write_cmd			; final function cmd set
+	;
+	lcd_wait_busy			; wait until ready
+
+	ldi data, 0b00001000	; LCD display off
+	lcd_write_cmd
+	lcd_wait_busy
+
+	ldi data, 0b00000001	; LCD display clear
+	lcd_write_cmd
+	lcd_wait_busy
+
+	ldi data, 0b00000110	; increment, no shift
+	lcd_write_cmd
+	lcd_wait_busy
+
+	ldi data, 0b00001111	; LCD display on, cursor, blink
+	lcd_write_cmd
+	lcd_wait_busy
+
+	;epilogue
+	adiw Y, 1
+	out SPH, YH
+	out SPL, YL
+	pop YH
+	pop YL
+	pop r19
+	pop r18
+	pop r17
+	pop r16
+	ret
+
+WRITE:
+	; write to data
+	push r16
+	push r17
+	push YL
+	push YH
+	in YL, SPL
+	in YH, SPH
+	sbiw Y, 1
+
+	mov data, r27	; change the arg register to display
+	lcd_write_data
+	lcd_wait_busy
+
+	;epilogue
+	adiw Y, 1
+	out SPH, YH
+	out SPL, YL
+	pop YH
+	pop YL
+	pop r17
+	pop r16
+	ret
+
+
+;
+; Decimal_Hex.asm
+;
+; Created: 22/10/2024 3:49:27 PM
+; Author : Siyuan Zhao z5554919
+;
+
+;   r27 will be the ascii value of the hundreds and tens
+;   r30 will be the ascii value of the ones
+;   r28-R23 are used here
+	
+
+decimal_conversion:
+	ldi r23, '0'
+    ldi r26, r24             ; Load result (y) r24 into register r26.
+    tst r26                   ; Test if result is zero
+    brpl positive_number       ; If positive, branch to handle positive numbers
+
+
+
+    ; Handle negative number
+    ldi r27, '-'              ; Load ASCII for '-'
+    lcd_write_data
+	lcd_wait_busy
+    neg r26                   ; Negate the number to convert to positive
+
+positive_number:
+    ; Convert hundreds place
+    ldi r28, 100              ; Load 100 for division
+    rcall divide               ; Call divide subroutine
+    mov r27, r29               ; Get the quotient (hundreds digit) in r27
+    cpi r27, 0                ; Check if it's zero
+    brne display_digit         ; If non-zero, display it
+    rjmp check_tens_digit      ; Otherwise, move to tens place
+
+display_digit:
+    add r27, r23              ; Convert to ASCII ('0' = 0x30)
+    lcd_write_data
+	lcd_wait_busy
+
+check_tens_digit:
+    ; Convert tens place
+    ldi r28, 10               ; Load 10 for division
+    rcall divide               ; Call divide subroutine
+    mov r27, r29               ; Get the quotient (tens digit) in r27
+    cpi r27, 0                ; Check if it's zero
+    brne display_tens_digit    ; If non-zero, display it
+    rjmp display_ones_digit    ; Otherwise, move to ones place
+
+display_tens_digit:
+    add r27, r23              ; Convert to ASCII
+    lcd_write_data
+	lcd_wait_busy
+display_ones_digit:
+    ; Ones place is left in r30 (remainder of tens division)
+    add r30, r23              ; Convert to ASCII
+	mov r27, r30
+    rcall WRITE        ; Send ones digit to LCDlcd_write_data
+	lcd_wait_busy
+
+    ret                        ; Return from subroutine
+
+; Divide r26 by r28, result is quotient in r29 and remainder in r30
+divide:
+    clr r29                   ; Clear quotient register
+    clr r30                   ; Clear remainder register
+
+divide_loop:
+    cp r26, r28               ; Compare r26 (dividend) with r28 (divisor)
+    brlo divide_done           ; If r26 < r28, exit loop
+
+    sub r26, r28              ; Subtract divisor from dividend
+    inc r29                   ; Increment quotient
+    rjmp divide_loop           ; Repeat until r26 < r28
+
+divide_done:
+    mov r30, r26              ; Store remainder in r30
+    ret                        ; Return with quotient in r29 and remainder in r30
