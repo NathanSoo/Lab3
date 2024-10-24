@@ -12,7 +12,7 @@
 
 decimal_conversion:
 	ldi r23, '0'
-    ldi r26, 112             ; Load result (y) into register r26. 107 fot the test
+    ldi r26, r24             ; Load result (y) r24 into register r26.
     tst r26                   ; Test if result is zero
     brpl positive_number       ; If positive, branch to handle positive numbers
 
