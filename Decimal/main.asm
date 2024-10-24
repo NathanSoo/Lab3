@@ -19,7 +19,7 @@ decimal_conversion:
 
 
     ; Handle negative number
-    ldi r16, '-'              ; Load ASCII for '-'
+    ldi r27, '-'              ; Load ASCII for '-'
 ;    rcall lcd_send_data        ; Send '-' to the LCD
     neg r26                   ; Negate the number to convert to positive
 
