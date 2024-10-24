@@ -1,10 +1,10 @@
 
-AVRASM ver. 2.2.8  C:\Users\Owen\Desktop\9032\LCD_output\LCD_output\main.asm Tue Oct 22 23:23:25 2024
+AVRASM ver. 2.2.8  C:\Users\nsoo1\Documents\comp9032\Lab3\LCD_output\main.asm Thu Oct 24 14:41:28 2024
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m2560def.inc'
-C:\Users\Owen\Desktop\9032\LCD_output\LCD_output\main.asm(10): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m2560def.inc'
+C:\Users\nsoo1\Documents\comp9032\Lab3\LCD_output\main.asm(10): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m2560def.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m2560def.inc'
-C:\Users\Owen\Desktop\9032\LCD_output\LCD_output\main.asm(10): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m2560def.inc'
+C:\Users\nsoo1\Documents\comp9032\Lab3\LCD_output\main.asm(10): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m2560def.inc'
                                  
                                  ;
                                  
@@ -1850,7 +1850,7 @@ C:\Users\Owen\Desktop\9032\LCD_output\LCD_output\main.asm(10): Including file 'C
                                  ; Author : Owen
                                  ;
                                  
-                                 
+                                 ; parameter passed from r27
                                  ; Replace with your application code
                                  .include "m2560def.inc"
                                  
@@ -1921,7 +1921,7 @@ C:\Users\Owen\Desktop\9032\LCD_output\LCD_output\main.asm(10): Including file 'C
                                  .endmacro
                                  
                                  .macro lcd_write_data		; write data to LCD, waits for BF
-                                 	out PORTF, data			; set data port
+                                 	out PORTF, r19			; set data port
                                  	ldi temp, (1 << LCD_RS)|(0 << LCD_RW)
                                  	out PORTA, temp			; RS = 1, RW = 0 for data write
                                  	nop
@@ -1975,543 +1975,361 @@ C:\Users\Owen\Desktop\9032\LCD_output\LCD_output\main.asm(10): Including file 'C
                                  	brne loop1				; 2 taken, each outer iteration is 11 + 1 + 1 + 1 + 2 = 16 clock cycles at 16Mhz = 1us
                                  .endmacro
                                  
-                                 INITIALISE:
-000000 ef1f                      	ser temp
-000001 bb10                      	out DDRF, temp
-000002 b911                      	out DDRA, temp
-000003 2711                      	clr temp
-000004 bb11                      	out PORTF, temp
-000005 b912                      	out PORTA, temp
-                                 	;
-000006 e928                      	ldi DL, low(15000)		; delay 15ms
-000007 e33a                      	ldi DH, high(15000)
-000008 e013
-000009 951a
-00000a 0000
-00000b f7e9
-00000c 5021
-00000d 4030
-00000e f7c9                      	delay
-00000f e308                      	ldi data, 0b00111000	; 2 x 5 x 7 DL = 1, 8bits | N = 1, 2-line | F = 0, 5 x 7 dots
-000010 bb01
-000011 2711
-000012 b912
-000013 0000
-000014 9a16
-000015 0000
-000016 0000
-000017 0000
-000018 9816
-000019 0000
-00001a 0000
-00001b 0000                      	lcd_write_cmd			; 1st function cmd set
+                                 main:
+000000 d00a                      	rcall INITIALISE_LCD
+000001 e431                      	ldi r19, 'A'
+000002 d114                      	rcall WRITE
+                                 	
+000003 e432                      	ldi r19, 'B'
+000004 d112                      	rcall WRITE
+000005 e433                      	ldi r19, 'C'
+000006 d110                      	rcall WRITE
+000007 e434                      	ldi r19, 'D'
+000008 d10e                      	rcall WRITE
+000009 e435                      	ldi r19, 'E'
+00000a d10c                      	rcall WRITE
+                                 	
                                  
-00001c e024                      	ldi DL, low(4100)		; delay 4.1ms
-00001d e130                      	ldi DH, high(4100)
-00001e e013
-00001f 951a
-000020 0000
-000021 f7e9
-000022 5021
-000023 4030
-000024 f7c9                      	delay
-000025 bb01
-000026 2711
-000027 b912
-000028 0000
-000029 9a16
+                                 INITIALISE_LCD:
+                                 	; prologue
+00000b 930f                      	push r16
+00000c 931f                      	push r17
+00000d 932f                      	push r18
+00000e 933f                      	push r19
+00000f 93cf                      	push YL
+000010 93df                      	push YH
+000011 b7cd                      	in YL, SPL
+000012 b7de                      	in YH, SPH
+000013 9721                      	sbiw Y, 1
+                                 
+000014 ef1f                      	ser temp
+000015 bb10                      	out DDRF, temp
+000016 b911                      	out DDRA, temp
+000017 2711                      	clr temp
+000018 bb11                      	out PORTF, temp
+000019 b912                      	out PORTA, temp
+                                 	;
+00001a e928                      	ldi DL, low(15000)		; delay 15ms
+00001b e33a                      	ldi DH, high(15000)
+00001c e013
+00001d 951a
+00001e 0000
+00001f f7e9
+000020 5021
+000021 4030
+000022 f7c9                      	delay
+000023 e308                      	ldi data, 0b00111000	; 2 x 5 x 7 DL = 1, 8bits | N = 1, 2-line | F = 0, 5 x 7 dots
+000024 bb01
+000025 2711
+000026 b912
+000027 0000
+000028 9a16
+000029 0000
 00002a 0000
 00002b 0000
-00002c 0000
-00002d 9816
+00002c 9816
+00002d 0000
 00002e 0000
-00002f 0000
-000030 0000                      	lcd_write_cmd			; 2nd function cmd set
+00002f 0000                      	lcd_write_cmd			; 1st function cmd set
                                  
-000031 e624                      	ldi DL, low(100)		; delay 4.1ms
-000032 e030                      	ldi DH, high(100)
-000033 e013
-000034 951a
-000035 0000
-000036 f7e9
-000037 5021
-000038 4030
-000039 f7c9                      	delay
-00003a bb01
-00003b 2711
-00003c b912
-00003d 0000
-00003e 9a16
+000030 e024                      	ldi DL, low(4100)		; delay 4.1ms
+000031 e130                      	ldi DH, high(4100)
+000032 e013
+000033 951a
+000034 0000
+000035 f7e9
+000036 5021
+000037 4030
+000038 f7c9                      	delay
+000039 bb01
+00003a 2711
+00003b b912
+00003c 0000
+00003d 9a16
+00003e 0000
 00003f 0000
 000040 0000
-000041 0000
-000042 9816
+000041 9816
+000042 0000
 000043 0000
-000044 0000
-000045 0000                      	lcd_write_cmd			; 3rd function cmd set
-000046 bb01
-000047 2711
-000048 b912
+000044 0000                      	lcd_write_cmd			; 2nd function cmd set
+                                 
+000045 e624                      	ldi DL, low(100)		; delay 4.1ms
+000046 e030                      	ldi DH, high(100)
+000047 e013
+000048 951a
 000049 0000
-00004a 9a16
-00004b 0000
-00004c 0000
-00004d 0000
-00004e 9816
-00004f 0000
-000050 0000
-000051 0000                      	lcd_write_cmd			; final function cmd set
-                                 	;
-000052 2711
-000053 bb10
-000054 e210
-000055 b912
-000056 0000
-000057 9a16
+00004a f7e9
+00004b 5021
+00004c 4030
+00004d f7c9                      	delay
+00004e bb01
+00004f 2711
+000050 b912
+000051 0000
+000052 9a16
+000053 0000
+000054 0000
+000055 0000
+000056 9816
+000057 0000
 000058 0000
-000059 0000
-00005a 0000
-00005b b11f
-00005c 9816
-00005d fd17
-00005e cff7
+000059 0000                      	lcd_write_cmd			; 3rd function cmd set
+00005a bb01
+00005b 2711
+00005c b912
+00005d 0000
+00005e 9a16
 00005f 0000
 000060 0000
 000061 0000
-000062 2711
-000063 b912
-000064 ef1f
-000065 bb10
-000066 0000
-000067 0000
-000068 0000                      	lcd_wait_busy			; wait until ready
-                                 
-000069 e008                      	ldi data, 0b00001000	; LCD display off
-00006a bb01
-00006b 2711
-00006c b912
+000062 9816
+000063 0000
+000064 0000
+000065 0000                      	lcd_write_cmd			; final function cmd set
+                                 	;
+000066 2711
+000067 bb10
+000068 e210
+000069 b912
+00006a 0000
+00006b 9a16
+00006c 0000
 00006d 0000
-00006e 9a16
-00006f 0000
-000070 0000
-000071 0000
-000072 9816
+00006e 0000
+00006f b11f
+000070 9816
+000071 fd17
+000072 cff7
 000073 0000
 000074 0000
-000075 0000                      	lcd_write_cmd
+000075 0000
 000076 2711
-000077 bb10
-000078 e210
-000079 b912
+000077 b912
+000078 ef1f
+000079 bb10
 00007a 0000
-00007b 9a16
-00007c 0000
-00007d 0000
-00007e 0000
-00007f b11f
-000080 9816
-000081 fd17
-000082 cff7
+00007b 0000
+00007c 0000                      	lcd_wait_busy			; wait until ready
+                                 
+00007d e008                      	ldi data, 0b00001000	; LCD display off
+00007e bb01
+00007f 2711
+000080 b912
+000081 0000
+000082 9a16
 000083 0000
 000084 0000
 000085 0000
-000086 2711
-000087 b912
-000088 ef1f
-000089 bb10
-00008a 0000
-00008b 0000
-00008c 0000                      	lcd_wait_busy
-                                 
-00008d e001                      	ldi data, 0b00000001	; LCD display clear
-00008e bb01
-00008f 2711
-000090 b912
+000086 9816
+000087 0000
+000088 0000
+000089 0000                      	lcd_write_cmd
+00008a 2711
+00008b bb10
+00008c e210
+00008d b912
+00008e 0000
+00008f 9a16
+000090 0000
 000091 0000
-000092 9a16
-000093 0000
-000094 0000
-000095 0000
-000096 9816
+000092 0000
+000093 b11f
+000094 9816
+000095 fd17
+000096 cff7
 000097 0000
 000098 0000
-000099 0000                      	lcd_write_cmd
+000099 0000
 00009a 2711
-00009b bb10
-00009c e210
-00009d b912
+00009b b912
+00009c ef1f
+00009d bb10
 00009e 0000
-00009f 9a16
-0000a0 0000
-0000a1 0000
-0000a2 0000
-0000a3 b11f
-0000a4 9816
-0000a5 fd17
-0000a6 cff7
+00009f 0000
+0000a0 0000                      	lcd_wait_busy
+                                 
+0000a1 e001                      	ldi data, 0b00000001	; LCD display clear
+0000a2 bb01
+0000a3 2711
+0000a4 b912
+0000a5 0000
+0000a6 9a16
 0000a7 0000
 0000a8 0000
 0000a9 0000
-0000aa 2711
-0000ab b912
-0000ac ef1f
-0000ad bb10
-0000ae 0000
-0000af 0000
-0000b0 0000                      	lcd_wait_busy
-                                 
-0000b1 e006                      	ldi data, 0b00000110	; increment, no shift
-0000b2 bb01
-0000b3 2711
-0000b4 b912
+0000aa 9816
+0000ab 0000
+0000ac 0000
+0000ad 0000                      	lcd_write_cmd
+0000ae 2711
+0000af bb10
+0000b0 e210
+0000b1 b912
+0000b2 0000
+0000b3 9a16
+0000b4 0000
 0000b5 0000
-0000b6 9a16
-0000b7 0000
-0000b8 0000
-0000b9 0000
-0000ba 9816
+0000b6 0000
+0000b7 b11f
+0000b8 9816
+0000b9 fd17
+0000ba cff7
 0000bb 0000
 0000bc 0000
-0000bd 0000                      	lcd_write_cmd
+0000bd 0000
 0000be 2711
-0000bf bb10
-0000c0 e210
-0000c1 b912
+0000bf b912
+0000c0 ef1f
+0000c1 bb10
 0000c2 0000
-0000c3 9a16
-0000c4 0000
-0000c5 0000
-0000c6 0000
-0000c7 b11f
-0000c8 9816
-0000c9 fd17
-0000ca cff7
+0000c3 0000
+0000c4 0000                      	lcd_wait_busy
+                                 
+0000c5 e006                      	ldi data, 0b00000110	; increment, no shift
+0000c6 bb01
+0000c7 2711
+0000c8 b912
+0000c9 0000
+0000ca 9a16
 0000cb 0000
 0000cc 0000
 0000cd 0000
-0000ce 2711
-0000cf b912
-0000d0 ef1f
-0000d1 bb10
-0000d2 0000
-0000d3 0000
-0000d4 0000                      	lcd_wait_busy
-                                 
-0000d5 e00f                      	ldi data, 0b00001111	; LCD display on, cursor, blink
-0000d6 bb01
-0000d7 2711
-0000d8 b912
+0000ce 9816
+0000cf 0000
+0000d0 0000
+0000d1 0000                      	lcd_write_cmd
+0000d2 2711
+0000d3 bb10
+0000d4 e210
+0000d5 b912
+0000d6 0000
+0000d7 9a16
+0000d8 0000
 0000d9 0000
-0000da 9a16
-0000db 0000
-0000dc 0000
-0000dd 0000
-0000de 9816
+0000da 0000
+0000db b11f
+0000dc 9816
+0000dd fd17
+0000de cff7
 0000df 0000
 0000e0 0000
-0000e1 0000                      	lcd_write_cmd
+0000e1 0000
 0000e2 2711
-0000e3 bb10
-0000e4 e210
-0000e5 b912
+0000e3 b912
+0000e4 ef1f
+0000e5 bb10
 0000e6 0000
-0000e7 9a16
-0000e8 0000
-0000e9 0000
-0000ea 0000
-0000eb b11f
-0000ec 9816
-0000ed fd17
-0000ee cff7
+0000e7 0000
+0000e8 0000                      	lcd_wait_busy
+                                 
+0000e9 e00f                      	ldi data, 0b00001111	; LCD display on, cursor, blink
+0000ea bb01
+0000eb 2711
+0000ec b912
+0000ed 0000
+0000ee 9a16
 0000ef 0000
 0000f0 0000
 0000f1 0000
-0000f2 2711
-0000f3 b912
-0000f4 ef1f
-0000f5 bb10
-0000f6 0000
-0000f7 0000
-0000f8 0000                      	lcd_wait_busy
+0000f2 9816
+0000f3 0000
+0000f4 0000
+0000f5 0000                      	lcd_write_cmd
+0000f6 2711
+0000f7 bb10
+0000f8 e210
+0000f9 b912
+0000fa 0000
+0000fb 9a16
+0000fc 0000
+0000fd 0000
+0000fe 0000
+0000ff b11f
+000100 9816
+000101 fd17
+000102 cff7
+000103 0000
+000104 0000
+000105 0000
+000106 2711
+000107 b912
+000108 ef1f
+000109 bb10
+00010a 0000
+00010b 0000
+00010c 0000                      	lcd_wait_busy
+                                 
+                                 	;epilogue
+00010d 9621                      	adiw Y, 1
+00010e bfde                      	out SPH, YH
+00010f bfcd                      	out SPL, YL
+000110 91df                      	pop YH
+000111 91cf                      	pop YL
+000112 913f                      	pop r19
+000113 912f                      	pop r18
+000114 911f                      	pop r17
+000115 910f                      	pop r16
+000116 9508                      	ret
                                  
                                  WRITE:
                                  	; write to data
-0000f9 e403                      	ldi data, 'C'
-0000fa bb01
-0000fb e810
-0000fc b912
-0000fd 0000
-0000fe 9a16
-0000ff 0000
-000100 0000
-000101 0000
-000102 9816
-000103 0000
-000104 0000
-000105 0000                      	lcd_write_data
-000106 2711
-000107 bb10
-000108 e210
-000109 b912
-00010a 0000
-00010b 9a16
-00010c 0000
-00010d 0000
-00010e 0000
-00010f b11f
-000110 9816
-000111 fd17
-000112 cff7
-000113 0000
-000114 0000
-000115 0000
-000116 2711
-000117 b912
-000118 ef1f
-000119 bb10
-00011a 0000
-00011b 0000
-00011c 0000                      	lcd_wait_busy
                                  
-00011d e40f                      	ldi data, 'O'
-00011e bb01
-00011f e810
-000120 b912
-000121 0000
-000122 9a16
+000117 930f                      	push r16
+000118 931f                      	push r17
+000119 93cf                      	push YL
+00011a 93df                      	push YH
+00011b b7cd                      	in YL, SPL
+00011c b7de                      	in YH, SPH
+00011d 9721                      	sbiw Y, 1
+                                 
+00011e 2f03                      	mov r16, r19	; change the arg register to display
+00011f 2711
+000120 bb10
+000121 e210
+000122 b912
 000123 0000
-000124 0000
+000124 9a16
 000125 0000
-000126 9816
+000126 0000
 000127 0000
-000128 0000
-000129 0000                      	lcd_write_data
-00012a 2711
-00012b bb10
-00012c e210
-00012d b912
+000128 b11f
+000129 9816
+00012a fd17
+00012b cff7
+00012c 0000
+00012d 0000
 00012e 0000
-00012f 9a16
-000130 0000
-000131 0000
-000132 0000
-000133 b11f
-000134 9816
-000135 fd17
-000136 cff7
-000137 0000
-000138 0000
+00012f 2711
+000130 b912
+000131 ef1f
+000132 bb10
+000133 0000
+000134 0000
+000135 0000                      	lcd_wait_busy
+000136 bb31
+000137 e810
+000138 b912
 000139 0000
-00013a 2711
-00013b b912
-00013c ef1f
-00013d bb10
-00013e 0000
+00013a 9a16
+00013b 0000
+00013c 0000
+00013d 0000
+00013e 9816
 00013f 0000
-000140 0000                      	lcd_wait_busy
+000140 0000
+000141 0000                      	lcd_write_data
                                  
-000141 e40d                      	ldi data, 'M'
-000142 bb01
-000143 e810
-000144 b912
-000145 0000
-000146 9a16
-000147 0000
-000148 0000
-000149 0000
-00014a 9816
-00014b 0000
-00014c 0000
-00014d 0000                      	lcd_write_data
-00014e 2711
-00014f bb10
-000150 e210
-000151 b912
-000152 0000
-000153 9a16
-000154 0000
-000155 0000
-000156 0000
-000157 b11f
-000158 9816
-000159 fd17
-00015a cff7
-00015b 0000
-00015c 0000
-00015d 0000
-00015e 2711
-00015f b912
-000160 ef1f
-000161 bb10
-000162 0000
-000163 0000
-000164 0000                      	lcd_wait_busy
-                                 
-000165 e500                      	ldi data, 'P'
-000166 bb01
-000167 e810
-000168 b912
-000169 0000
-00016a 9a16
-00016b 0000
-00016c 0000
-00016d 0000
-00016e 9816
-00016f 0000
-000170 0000
-000171 0000                      	lcd_write_data
-000172 2711
-000173 bb10
-000174 e210
-000175 b912
-000176 0000
-000177 9a16
-000178 0000
-000179 0000
-00017a 0000
-00017b b11f
-00017c 9816
-00017d fd17
-00017e cff7
-00017f 0000
-000180 0000
-000181 0000
-000182 2711
-000183 b912
-000184 ef1f
-000185 bb10
-000186 0000
-000187 0000
-000188 0000                      	lcd_wait_busy
-                                 
-000189 e309                      	ldi data, '9'
-00018a bb01
-00018b e810
-00018c b912
-00018d 0000
-00018e 9a16
-00018f 0000
-000190 0000
-000191 0000
-000192 9816
-000193 0000
-000194 0000
-000195 0000                      	lcd_write_data
-000196 2711
-000197 bb10
-000198 e210
-000199 b912
-00019a 0000
-00019b 9a16
-00019c 0000
-00019d 0000
-00019e 0000
-00019f b11f
-0001a0 9816
-0001a1 fd17
-0001a2 cff7
-0001a3 0000
-0001a4 0000
-0001a5 0000
-0001a6 2711
-0001a7 b912
-0001a8 ef1f
-0001a9 bb10
-0001aa 0000
-0001ab 0000
-0001ac 0000                      	lcd_wait_busy
-                                 
-0001ad e300                      	ldi data, '0'
-0001ae bb01
-0001af e810
-0001b0 b912
-0001b1 0000
-0001b2 9a16
-0001b3 0000
-0001b4 0000
-0001b5 0000
-0001b6 9816
-0001b7 0000
-0001b8 0000
-0001b9 0000                      	lcd_write_data
-0001ba 2711
-0001bb bb10
-0001bc e210
-0001bd b912
-0001be 0000
-0001bf 9a16
-0001c0 0000
-0001c1 0000
-0001c2 0000
-0001c3 b11f
-0001c4 9816
-0001c5 fd17
-0001c6 cff7
-0001c7 0000
-0001c8 0000
-0001c9 0000
-0001ca 2711
-0001cb b912
-0001cc ef1f
-0001cd bb10
-0001ce 0000
-0001cf 0000
-0001d0 0000                      	lcd_wait_busy
-                                 
-0001d1 e303                      	ldi data, '3'
-0001d2 bb01
-0001d3 e810
-0001d4 b912
-0001d5 0000
-0001d6 9a16
-0001d7 0000
-0001d8 0000
-0001d9 0000
-0001da 9816
-0001db 0000
-0001dc 0000
-0001dd 0000                      	lcd_write_data
-0001de 2711
-0001df bb10
-0001e0 e210
-0001e1 b912
-0001e2 0000
-0001e3 9a16
-0001e4 0000
-0001e5 0000
-0001e6 0000
-0001e7 b11f
-0001e8 9816
-0001e9 fd17
-0001ea cff7
-0001eb 0000
-0001ec 0000
-0001ed 0000
-0001ee 2711
-0001ef b912
-0001f0 ef1f
-0001f1 bb10
-0001f2 0000
-0001f3 0000
-0001f4 0000                      	lcd_wait_busy
-                                 
-0001f5 e302                      	ldi data, '2'
-0001f6 bb01
-0001f7 e810
-0001f8 b912
-0001f9 0000
-0001fa 9a16
-0001fb 0000
-0001fc 0000
-0001fd 0000
-0001fe 9816
-0001ff 0000
-000200 0000
-000201 0000                      	lcd_write_data
-                                 	
+                                 	;epilogue
+000142 9621                      	adiw Y, 1
+000143 bfde                      	out SPH, YH
+000144 bfcd                      	out SPL, YL
+000145 91df                      	pop YH
+000146 91cf                      	pop YL
+000147 911f                      	pop r17
+000148 910f                      	pop r16
                                  
                                  
-                                 stop:
 
 
 RESOURCE USE INFORMATION
@@ -2529,40 +2347,40 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega2560" register use summary:
-x  :   0 y  :   0 z  :   0 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
+x  :   0 y  :   4 z  :   0 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  29 r17: 164 r18:   6 r19:   6 r20:   0 
-r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 
-r29:   0 r30:   0 r31:   0 
-Registers used: 4 out of 35 (11.4%)
+r13:   0 r14:   0 r15:   0 r16:  18 r17:  94 r18:   8 r19:  15 r20:   0 
+r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   8 
+r29:   8 r30:   0 r31:   0 
+Registers used: 7 out of 35 (20.0%)
 
 "ATmega2560" instruction use summary:
-.lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   0 and   :   0 
+.lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   2 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   0 break :   0 breq  :   0 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
 brne  :   6 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :  28 cbr   :   0 
-clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :  33 cls   :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :  15 cbr   :   0 
+clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :  21 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
 cpi   :   0 cpse  :   0 dec   :   3 eicall:   0 eijmp :   0 elpm  :   0 
 eor   :   0 fmul  :   0 fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 
-in    :  12 inc   :   0 jmp   :   0 ld    :   0 ldd   :   0 ldi   :  42 
-lds   :   0 lpm   :   0 lsl   :   0 lsr   :   0 mov   :   0 movw  :   0 
-mul   :   0 muls  :   0 mulsu :   0 neg   :   0 nop   : 235 or    :   0 
-ori   :   0 out   :  84 pop   :   0 push  :   0 rcall :   0 ret   :   0 
-reti  :   0 rjmp  :  13 rol   :   0 ror   :   0 sbc   :   0 sbci  :   3 
-sbi   :  28 sbic  :   0 sbis  :   0 sbiw  :   0 sbr   :   0 sbrc  :  12 
-sbrs  :   0 sec   :   0 seh   :   0 sei   :   0 sen   :   0 ser   :  13 
+in    :  10 inc   :   0 jmp   :   0 ld    :   0 ldd   :   0 ldi   :  26 
+lds   :   0 lpm   :   0 lsl   :   0 lsr   :   0 mov   :   1 movw  :   0 
+mul   :   0 muls  :   0 mulsu :   0 neg   :   0 nop   : 126 or    :   0 
+ori   :   0 out   :  50 pop   :  10 push  :  10 rcall :   6 ret   :   2 
+reti  :   0 rjmp  :   6 rol   :   0 ror   :   0 sbc   :   0 sbci  :   3 
+sbi   :  15 sbic  :   0 sbis  :   0 sbiw  :   2 sbr   :   0 sbrc  :   6 
+sbrs  :   0 sec   :   0 seh   :   0 sei   :   0 sen   :   0 ser   :   7 
 ses   :   0 set   :   0 sev   :   0 sez   :   0 sleep :   0 spm   :   0 
 st    :   0 std   :   0 sts   :   0 sub   :   0 subi  :   3 swap  :   0 
 tst   :   0 wdr   :   0 
-Instructions used: 14 out of 116 (12.1%)
+Instructions used: 21 out of 116 (18.1%)
 
 "ATmega2560" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000406   1030      0   1030  262144   0.4%
+[.cseg] 0x000000 0x000294    660      0    660  262144   0.3%
 [.dseg] 0x000200 0x000200      0      0      0    8192   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    4096   0.0%
 

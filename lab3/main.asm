@@ -65,13 +65,14 @@ end_advance:
 ; Causes LED bar to flash if overflow occurs
 .macro flash        
 	ser r16
-	out PORTC, r16
-	ldi r17, 0xFF   ; N.B. adjust to change length of flash
+	out PORTB, r16
+	ldi r17, 0x20   ; N.B. adjust to change length of flash
 delay:
+	debounce
 	dec r17
 	brne delay
-	clr r20
-	out PORTC, r20
+	clr r16
+	out PORTB, r16
 .endmacro
 	
 
@@ -82,6 +83,8 @@ delay:
 	out		DDRC, w
 	ldi		w, PORTBDIR
 	out		DDRB, w
+	;ser		r16 
+	;out		DDRE, r20   ; set port C for output
 
 	clr		state						; initialise input state
 	clr		arg0
@@ -182,11 +185,9 @@ state2:
 not_num2:
 	cpi		w, 0x23
 	brne	end_state
-	rcall linear
+	rcall	linear
 	advance_state						; note that advance state here will clear the r10, r11, r12
 end_state:
-
-	out		PORTB, arg2
 
 hold_loop:								; wait until button is unpressed before continuing to read keypad
 	in		w, PINC						; read port again
@@ -206,6 +207,8 @@ ascii_lookup:
 linear:
 	push YL
 	push YH         ; save r29:r28 in stack
+	push ZL
+	push ZH
 	push r16
 	push r17		; save conflict registers
 	clr  r24       
@@ -232,6 +235,8 @@ overflow:
 done:
 	pop r17
 	pop r16         ; reset conflict registers
+	pop ZH
+	pop ZL
 	pop YH
 	pop YL
 	ret             ; return to main

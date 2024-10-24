@@ -33,7 +33,7 @@
 .endmacro
 
 .macro lcd_write_data		; write data to LCD, waits for BF
-	out PORTF, data			; set data port
+	out PORTF, r19			; set data port
 	ldi temp, (1 << LCD_RS)|(0 << LCD_RW)
 	out PORTA, temp			; RS = 1, RW = 0 for data write
 	nop
@@ -89,9 +89,17 @@ loop2:
 
 main:
 	rcall INITIALISE_LCD
-	ldi r27 'C'
+	ldi r19, 'A'
 	rcall WRITE
 	
+	ldi r19, 'B'
+	rcall WRITE
+	ldi r19, 'C'
+	rcall WRITE
+	ldi r19, 'D'
+	rcall WRITE
+	ldi r19, 'E'
+	rcall WRITE
 	
 
 INITIALISE_LCD:
@@ -162,6 +170,7 @@ INITIALISE_LCD:
 
 WRITE:
 	; write to data
+
 	push r16
 	push r17
 	push YL
@@ -170,9 +179,9 @@ WRITE:
 	in YH, SPH
 	sbiw Y, 1
 
-	mov data, r27	; change the arg register to display
-	lcd_write_data
+	mov r16, r19	; change the arg register to display
 	lcd_wait_busy
+	lcd_write_data
 
 	;epilogue
 	adiw Y, 1
@@ -182,4 +191,6 @@ WRITE:
 	pop YL
 	pop r17
 	pop r16
+
+
 	ret

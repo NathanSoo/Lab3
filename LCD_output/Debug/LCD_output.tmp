@@ -1,18 +1,18 @@
 <ASSEMBLER_INFO>
  <VERSION>2.2.8</VERSION>
  <DEVICE>"ATmega2560"</DEVICE>
- <WORKING_DIR>C:\Users\Owen\Desktop\9032\LCD_output\LCD_output\Debug</WORKING_DIR>
+ <WORKING_DIR>C:\Users\nsoo1\Documents\comp9032\Lab3\LCD_output\Debug</WORKING_DIR>
  <INCLUDE_PATH>
   <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc</DIR>
   <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
   <DIR></DIR>
  </INCLUDE_PATH>
- <SOURCE_FILE>C:\Users\Owen\Desktop\9032\LCD_output\LCD_output\main.asm</SOURCE_FILE>
+ <SOURCE_FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\LCD_output\main.asm</SOURCE_FILE>
  <INCLUDED_FILES>
   <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m2560def.inc</FILE>
  </INCLUDED_FILES>
  <OBJECT_FILES>
-  <FILE>C:\Users\Owen\Desktop\9032\LCD_output\LCD_output\Debug\LCD_output.obj</FILE>
+  <FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\LCD_output\Debug\LCD_output.obj</FILE>
  </OBJECT_FILES>
  <HEX_FILES>
   <FILE>LCD_output.hex</FILE>
@@ -22,8 +22,8 @@
   <FILE>LCD_output.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <INITIALISE><FILE>C:\Users\Owen\Desktop\9032\LCD_output\LCD_output\main.asm</FILE><LINE>90</LINE></INITIALISE>
-  <WRITE><FILE>C:\Users\Owen\Desktop\9032\LCD_output\LCD_output\main.asm</FILE><LINE>133</LINE></WRITE>
-  <stop><FILE>C:\Users\Owen\Desktop\9032\LCD_output\LCD_output\main.asm</FILE><LINE>168</LINE></stop>
+  <main><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\LCD_output\main.asm</FILE><LINE>90</LINE></main>
+  <INITIALISE_LCD><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\LCD_output\main.asm</FILE><LINE>105</LINE></INITIALISE_LCD>
+  <WRITE><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\LCD_output\main.asm</FILE><LINE>171</LINE></WRITE>
  </LABELS>
 </ASSEMBLER_INFO>

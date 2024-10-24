@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\nsoo1\OneDrive\Documents\UniDocuments\COMP9032\Labs\lab3\lab3\lab3\main.asm Mon Oct 21 12:42:21 2024
+AVRASM ver. 2.2.8  C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm Thu Oct 24 14:13:26 2024
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1386,19 +1386,24 @@ CSEG update_delay 00000012
 CSEG nextcol      0000002b
 CSEG row_loop     0000001b
 CSEG inc_row      00000027
-CSEG debounce_loop@debounce@1944 00000020
+CSEG debounce_loop@debounce@1959 00000020
 CSEG resolve      0000002f
 CSEG value_lookup 00000080
 CSEG state0       0000003f
 CSEG state1       00000053
 CSEG state2       00000067
 CSEG not_num0     00000049
-CSEG end_state    0000007a
-CSEG end_advance@advance_state@2009 00000052
+CSEG end_state    0000007b
+CSEG end_advance@advance_state@2024 00000052
 CSEG not_num1     0000005d
-CSEG end_advance@advance_state@2038 00000066
+CSEG end_advance@advance_state@2053 00000066
 CSEG not_num2     00000071
-CSEG end_advance@advance_state@2068 0000007a
+CSEG linear       00000090
+CSEG end_advance@advance_state@2083 0000007b
 CSEG hold_loop    0000007b
 CSEG halt         0000007f
 CSEG ascii_lookup 00000088
+CSEG overflow     000000a8
+CSEG done         000000b6
+CSEG delay@flash@2137 000000ab
+CSEG debounce_loop@debounce@2143 000000ad

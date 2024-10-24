@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\Owen\Desktop\9032\LCD_output\LCD_output\main.asm Tue Oct 22 23:23:25 2024
+AVRASM ver. 2.2.8  C:\Users\nsoo1\Documents\comp9032\Lab3\LCD_output\main.asm Thu Oct 24 14:41:28 2024
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1366,24 +1366,18 @@ DEF  data         r16
 DEF  temp         r17
 DEF  DL           r18
 DEF  DH           r19
-CSEG INITIALISE   00000000
-CSEG loop1@delay@3773 00000008
-CSEG loop2@delay@3773 00000009
-CSEG loop1@delay@3804 0000001e
-CSEG loop2@delay@3804 0000001f
-CSEG loop1@delay@3834 00000033
-CSEG loop2@delay@3834 00000034
-CSEG busy@lcd_wait_busy@3877 00000056
-CSEG busy@lcd_wait_busy@3922 0000007a
-CSEG busy@lcd_wait_busy@3967 0000009e
-CSEG busy@lcd_wait_busy@4012 000000c2
-CSEG busy@lcd_wait_busy@4057 000000e6
-CSEG WRITE        000000f9
-CSEG busy@lcd_wait_busy@4104 0000010a
-CSEG busy@lcd_wait_busy@4149 0000012e
-CSEG busy@lcd_wait_busy@4194 00000152
-CSEG busy@lcd_wait_busy@4239 00000176
-CSEG busy@lcd_wait_busy@4284 0000019a
-CSEG busy@lcd_wait_busy@4329 000001be
-CSEG busy@lcd_wait_busy@4374 000001e2
-CSEG stop         00000202
+CSEG main         00000000
+CSEG INITIALISE_LCD 0000000b
+CSEG WRITE        00000117
+CSEG loop1@delay@3799 0000001c
+CSEG loop2@delay@3799 0000001d
+CSEG loop1@delay@3830 00000032
+CSEG loop2@delay@3830 00000033
+CSEG loop1@delay@3860 00000047
+CSEG loop2@delay@3860 00000048
+CSEG busy@lcd_wait_busy@3903 0000006a
+CSEG busy@lcd_wait_busy@3948 0000008e
+CSEG busy@lcd_wait_busy@3993 000000b2
+CSEG busy@lcd_wait_busy@4038 000000d6
+CSEG busy@lcd_wait_busy@4083 000000fa
+CSEG busy@lcd_wait_busy@4136 00000123
