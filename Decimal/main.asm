@@ -7,11 +7,12 @@
 
 ;   r27 will be the ascii value of the hundreds and tens
 ;   r30 will be the ascii value of the ones
+;   r28-R23 are used here
 	
 
 decimal_conversion:
 	ldi r23, '0'
-    ldi r26, 107              ; Load result (y) into register r26. 107 fot the test
+    ldi r26, 112             ; Load result (y) into register r26. 107 fot the test
     tst r26                   ; Test if result is zero
     brpl positive_number       ; If positive, branch to handle positive numbers
 
@@ -51,6 +52,7 @@ display_tens_digit:
 display_ones_digit:
     ; Ones place is left in r30 (remainder of tens division)
     add r30, r23              ; Convert to ASCII
+	mov r27, r30
 ;    rcall lcd_send_data        ; Send ones digit to LCD
 
     ret                        ; Return from subroutine
