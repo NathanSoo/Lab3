@@ -5,7 +5,7 @@
 ; Author : Owen
 ;
 
-
+; parameter passed from r27
 ; Replace with your application code
 .include "m2560def.inc"
 .equ LCD_RS = 7
@@ -87,7 +87,25 @@ loop2:
 	brne loop1				; 2 taken, each outer iteration is 11 + 1 + 1 + 1 + 2 = 16 clock cycles at 16Mhz = 1us
 .endmacro
 
-INITIALISE:
+main:
+	rcall INITIALISE_LCD
+	ldi r27 'C'
+	rcall WRITE
+	
+	
+
+INITIALISE_LCD:
+	; prologue
+	push r16
+	push r17
+	push r18
+	push r19
+	push YL
+	push YH
+	in YL, SPL
+	in YH, SPH
+	sbiw Y, 1
+
 	ser temp
 	out DDRF, temp
 	out DDRA, temp
@@ -130,40 +148,38 @@ INITIALISE:
 	lcd_write_cmd
 	lcd_wait_busy
 
+	;epilogue
+	adiw Y, 1
+	out SPH, YH
+	out SPL, YL
+	pop YH
+	pop YL
+	pop r19
+	pop r18
+	pop r17
+	pop r16
+	ret
+
 WRITE:
 	; write to data
-	ldi data, 'C'
+	push r16
+	push r17
+	push YL
+	push YH
+	in YL, SPL
+	in YH, SPH
+	sbiw Y, 1
+
+	mov data, r27	; change the arg register to display
 	lcd_write_data
 	lcd_wait_busy
 
-	ldi data, 'O'
-	lcd_write_data
-	lcd_wait_busy
-
-	ldi data, 'M'
-	lcd_write_data
-	lcd_wait_busy
-
-	ldi data, 'P'
-	lcd_write_data
-	lcd_wait_busy
-
-	ldi data, '9'
-	lcd_write_data
-	lcd_wait_busy
-
-	ldi data, '0'
-	lcd_write_data
-	lcd_wait_busy
-
-	ldi data, '3'
-	lcd_write_data
-	lcd_wait_busy
-
-	ldi data, '2'
-	lcd_write_data
-	
-
-
-stop:
-	rjmp stop
+	;epilogue
+	adiw Y, 1
+	out SPH, YH
+	out SPL, YL
+	pop YH
+	pop YL
+	pop r17
+	pop r16
+	ret
