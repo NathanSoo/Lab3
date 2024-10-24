@@ -14,9 +14,9 @@ hex_conversion:
     ldi r29, 97          ; Load result (y) into register r29. 97 for the test
 
     ; Display '0x' prefix
-    ldi r16, '0'
+    ldi r27, '0'
 ;    rcall lcd_send_data
-    ldi r16, 'x'
+    ldi r27, 'x'
 ;    rcall lcd_send_data
 
     ; Extract high nibble
