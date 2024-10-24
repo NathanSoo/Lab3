@@ -20,7 +20,7 @@ decimal_conversion:
 
     ; Handle negative number
     ldi r27, '-'              ; Load ASCII for '-'
-;    rcall lcd_send_data        ; Send '-' to the LCD
+    rcall WRITE        ; Send '-' to the LCD
     neg r26                   ; Negate the number to convert to positive
 
 positive_number:
@@ -34,7 +34,7 @@ positive_number:
 
 display_digit:
     add r27, r23              ; Convert to ASCII ('0' = 0x30)
-;    rcall lcd_send_data        ; Send hundreds digit to LCD
+    rcall WRITE        ; Send hundreds digit to LCD
 
 check_tens_digit:
     ; Convert tens place
@@ -47,13 +47,13 @@ check_tens_digit:
 
 display_tens_digit:
     add r27, r23              ; Convert to ASCII
-;    rcall lcd_send_data        ; Send tens digit to LCD
+    rcall WRITE        ; Send tens digit to LCD
 
 display_ones_digit:
     ; Ones place is left in r30 (remainder of tens division)
     add r30, r23              ; Convert to ASCII
 	mov r27, r30
-;    rcall lcd_send_data        ; Send ones digit to LCD
+    rcall WRITE        ; Send ones digit to LCD
 
     ret                        ; Return from subroutine
 
