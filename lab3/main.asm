@@ -61,6 +61,18 @@ debounce_loop:
 	clr		arg2
 end_advance:
 .endmacro
+
+; Causes LED bar to flash if overflow occurs
+.macro flash        
+	ser r16
+	out PORTC, r16
+	ldi r17, 0xFF   ; N.B. adjust to change length of flash
+delay:
+	dec r17
+	brne delay
+	clr r20
+	out PORTC, r20
+.endmacro
 	
 
 	ldi		w, KEYPADSIZE				; initialise keypad size
@@ -170,7 +182,7 @@ state2:
 not_num2:
 	cpi		w, 0x23
 	brne	end_state
-	; call calculation function here arguments in r10, r11, r12 currently
+	rcall linear
 	advance_state						; note that advance state here will clear the r10, r11, r12
 end_state:
 
@@ -182,8 +194,6 @@ hold_loop:								; wait until button is unpressed before continuing to read key
 	breq	hold_loop					; if button still pressed don't allow key to be continually read
 
 	rjmp	scan_keypad
-
-
 	
 
 halt:
@@ -192,3 +202,36 @@ value_lookup:
 	.db		1, 2, 3, 0x41, 4, 5, 6, 0x42, 7, 8, 9, 0x43, 0x2A, 0, 0x23, 0x44
 ascii_lookup:
 	.db		0x31, 0x32, 0x33, 0x41, 0x34, 0x35, 0x36, 0x42, 0x37, 0x38, 0x39, 0x43, 0x2A, 0x30, 0x23, 0x44
+
+linear:
+	push YL
+	push YH         ; save r29:r28 in stack
+	push r16
+	push r17		; save conflict registers
+	clr  r24       
+	clr  r25        ; init r25:r24 to 0 
+	in   YL, SPL
+	in   YH, SPH    ; Initialise stack frame pointer value
+	push r12        ; Pass in b
+	push r11        ; Pass in x
+	push r10        ; Pass in a
+	pop  r16
+	pop  r17        ; store a and x into registers
+	muls r16, r17
+	tst  r1         ; check if overflow
+	brne overflow
+	sbrc r0, 7      ; check if signed overflow
+	rjmp overflow
+	mov  r24, r0    ; else continue    
+	pop  r16        ; store b into register
+	sub  r24, r16
+	rjmp done    
+overflow:
+	flash
+	ldi r25, 1		; r25 set to 1 if overflow occurred, else 0 
+done:
+	pop r17
+	pop r16         ; reset conflict registers
+	pop YH
+	pop YL
+	ret             ; return to main
