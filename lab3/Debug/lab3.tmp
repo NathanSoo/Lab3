@@ -33,17 +33,18 @@
   <resolve><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>136</LINE></resolve>
   <value_lookup><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>225</LINE></value_lookup>
   <not_c><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>157</LINE></not_c>
-  <end_state><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>197</LINE></end_state>
+  <display><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>211</LINE></display>
   <state0><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>165</LINE></state0>
   <state1><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>175</LINE></state1>
   <state2><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>185</LINE></state2>
   <not_num0><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>170</LINE></not_num0>
+  <end_state><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>197</LINE></end_state>
   <not_num1><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>180</LINE></not_num1>
   <not_num2><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>190</LINE></not_num2>
   <linear><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>230</LINE></linear>
-  <display><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>211</LINE></display>
   <hold_loop><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>204</LINE></hold_loop>
   <base_if><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>217</LINE></base_if>
+  <hex_conversion><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>508</LINE></hex_conversion>
   <end_base_if><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>219</LINE></end_base_if>
   <decimal_conversion><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>430</LINE></decimal_conversion>
   <halt><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>223</LINE></halt>
@@ -58,5 +59,8 @@
   <display_ones_digit><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>471</LINE></display_ones_digit>
   <divide_loop><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>485</LINE></divide_loop>
   <divide_done><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>493</LINE></divide_done>
+  <hex_to_ascii><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>540</LINE></hex_to_ascii>
+  <is_digit><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>547</LINE></is_digit>
+  <done_hex_conversion><FILE>C:\Users\nsoo1\Documents\comp9032\Lab3\lab3\main.asm</FILE><LINE>551</LINE></done_hex_conversion>
  </LABELS>
 </ASSEMBLER_INFO>
